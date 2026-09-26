@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="CartShare keeps group shopping simple, transparent, and ready for checkout."
+    />
+    <title>CartShare | Shop together</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="CartShare home"
+          ><span class="brand-mark">+</span
+          ><span>cart<span class="brand-share">share</span></span></a
+        >
+        <div class="topbar-meta">
+          <span class="sync-dot"><span></span> Live room</span>
+          <button
+            class="avatar"
+            id="profileButton"
+            type="button"
+            aria-label="Open profile menu"
+          >
+            JD
+          </button>
+        </div>
+      </header>
+
+      <section class="welcome-panel" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Collaborative shopping, minus the group chat</p>
+          <h1 id="page-title">Make the cart <em>collective.</em></h1>
+          <p class="intro">
+            Build one basket together, watch the total climb, and know exactly
+            who brought what.
+          </p>
+        </div>
+        <div class="room-actions">
+          <div class="room-field">
+            <label for="roomCode">Your room</label>
+            <div class="room-input-wrap">
+              <span>#</span
+              ><input
+                id="roomCode"
+                value="LOFT-42"
+                maxlength="12"
+                aria-label="Room code"
+              /><button id="joinRoom" type="button">Join</button>
+            </div>
+          </div>
+          <button id="newRoom" class="button button-quiet" type="button">
+            + New room
+          </button>
+        </div>
+      </section>
+
+      <div class="room-strip">
+        <span class="room-pulse"></span><strong id="roomLabel">LOFT-42</strong
+        ><span class="strip-divider"></span
+        ><span id="memberCount">4 members shopping</span
+        ><button
+          id="copyRoom"
+          class="copy-button"
+          type="button"
+          title="Copy room code"
+        >
+          Copy code
+        </button>
+      </div>
+
+      <section class="dashboard-grid">
+        <div class="main-column">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Shared list</p>
+              <h2>What do we need?</h2>
+            </div>
+            <span class="item-count" id="itemCount">0 items</span>
+          </div>
+          <form class="add-item" id="itemForm">
+            <label class="sr-only" for="itemName">Add an item</label>
+            <input
+              id="itemName"
+              name="itemName"
+              placeholder="Add something to the list..."
+              autocomplete="off"
+              required
+            />
+            <label class="sr-only" for="itemPrice">Estimated price</label>
+            <div class="price-input">
+              <span>$</span
+              ><input
+                id="itemPrice"
+                name="itemPrice"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
+            </div>
+            <button class="button button-primary" type="submit">
+              Add item <span>↗</span>
+            </button>
+          </form>
+          <div class="filter-row">
+            <div class="filters" role="group" aria-label="Filter items">
+              <button class="filter active" data-filter="all" type="button">
+                All <span id="allCount">0</span></button
+              ><button class="filter" data-filter="mine" type="button">
+                Mine <span id="mineCount">0</span></button
+              ><button class="filter" data-filter="done" type="button">
+                Picked up <span id="doneCount">0</span>
+              </button>
+            </div>
+            <span class="sort-label"
+              >Sorted by <strong>recently added</strong>⌄</span
+            >
+          </div>
+          <div class="cart-list" id="cartList"></div>
+          <div class="empty-state" id="emptyState" hidden>
+            <div class="empty-icon">+</div>
+            <h3>Your shared list is waiting.</h3>
+            <p>Add the first item and let the room take it from there.</p>
+          </div>
+        </div>
+
+        <aside class="side-column">
+          <section class="progress-card">
+            <div class="progress-top">
+              <div>
+                <p class="eyebrow">Free delivery progress</p>
+                <strong id="progressAmount">$0.00</strong
+                ><span> of $75.00</span>
+              </div>
+              <span class="delivery-icon">⌁</span>
+            </div>
+            <div class="progress-track"><span id="progressBar"></span></div>
+            <p id="progressMessage">Add $75.00 more to unlock free delivery.</p>
+            <div class="progress-footer">
+              <span>Current basket</span><strong id="basketTotal">$0.00</strong>
+            </div>
+          </section>
+          <section class="activity-card">
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">Room activity</p>
+                <h2>What’s happening</h2>
+              </div>
+              <span class="live-label"><span></span> Live</span>
+            </div>
+            <div class="activity-list" id="activityList"></div>
+            <button id="showActivity" class="text-button" type="button">
+              View all activity <span>→</span>
+            </button>
+          </section>
+          <button id="printReceipt" class="receipt-button" type="button">
+            <span class="receipt-icon">▤</span
+            ><span
+              ><strong>Print group receipt</strong
+              ><small>Audit-ready summary for everyone</small></span
+            ><span class="arrow">↗</span>
+          </button>
+        </aside>
+      </section>
+      <footer>
+        <span>CartShare / 2026</span
+        ><span>Made for the people who split the snacks.</span
+        ><button id="resetRoom" class="text-button" type="button">
+          Reset demo room
+        </button>
+      </footer>
+    </main>
+    <script src="js/app.js"></script>
+  </body>
+</html>
