@@ -1,4 +1,3 @@
-const STORAGE_PREFIX = "cartshare-room-";
 const USER_KEY = "cartshare-user";
 const defaultItems = [
   {
@@ -56,14 +55,21 @@ let currentFilter = "all";
 let user = localStorage.getItem(USER_KEY) || "You";
 
 const $ = (selector) => document.querySelector(selector);
-const roomKey = () => `${STORAGE_PREFIX}${roomCode}`;
-const getRoom = () =>
-  JSON.parse(localStorage.getItem(roomKey()) || "null") || {
-    items: defaultItems,
-    activity: defaultActivity,
-  };
-const saveRoom = (room) =>
-  localStorage.setItem(roomKey(), JSON.stringify(room));
+const roomKey = () => CartShareStorage.roomKey(roomCode);
+const getRoom = () => {
+  const room = CartShareStorage.getRoom(roomCode);
+  if (!room) return null;
+  if (!room.code) {
+    room.code = roomCode;
+    room.members = room.members?.length
+      ? room.members
+      : [...new Set(room.items.map((item) => item.addedBy))];
+    room.createdAt = room.createdAt || new Date().toISOString();
+    CartShareStorage.saveRoom(room);
+  }
+  return room;
+};
+const saveRoom = (room) => CartShareStorage.saveRoom(room);
 const initials = (name) =>
   name
     .split(" ")
@@ -82,7 +88,12 @@ function showToast(message) {
 }
 
 function render() {
-  const room = getRoom();
+  const room = getRoom() || {
+    code: roomCode,
+    members: [],
+    items: [],
+    activity: [],
+  };
   const visibleItems = room.items.filter(
     (item) =>
       currentFilter === "all" ||
@@ -106,8 +117,11 @@ function render() {
     total >= 75
       ? "Free delivery unlocked. Nice work, team."
       : `Add ${money(Math.max(75 - total, 0))} more to unlock free delivery.`;
+  const memberNames = room.members?.length
+    ? room.members
+    : room.items.map((item) => item.addedBy);
   $("#memberCount").textContent =
-    `${Math.max(new Set(room.items.map((item) => item.addedBy)).size, 1)} members shopping`;
+    `${Math.max(new Set(memberNames).size, 1)} members shopping`;
   $("#cartList").innerHTML = visibleItems
     .map(
       (item) =>
@@ -134,6 +148,7 @@ function render() {
 
 function mutateRoom(callback) {
   const room = getRoom();
+  if (!room) return;
   callback(room);
   saveRoom(room);
   render();
@@ -201,13 +216,18 @@ $("#joinRoom").addEventListener("click", () => {
     .replace(/[^A-Z0-9-]/g, "");
   if (!nextRoom) return;
   roomCode = nextRoom;
+  const joinedRoom = CartShareStorage.joinRoom(nextRoom, user);
+  if (!joinedRoom) {
+    roomCode = "LOFT-42";
+    showToast("Room not found. Create a new room first.");
+    render();
+    return;
+  }
   render();
   showToast(`Joined room ${roomCode}`);
 });
 $("#newRoom").addEventListener("click", () => {
-  roomCode = `ROOM-${Math.floor(100 + Math.random() * 900)}`;
-  saveRoom({
-    items: [],
+  const room = CartShareStorage.createRoom(user, {
     activity: [
       {
         text: `<strong>${user}</strong> created the room`,
@@ -216,6 +236,7 @@ $("#newRoom").addEventListener("click", () => {
       },
     ],
   });
+  roomCode = room.code;
   currentFilter = "all";
   render();
   showToast(`New room ${roomCode} is ready`);
@@ -247,6 +268,13 @@ window.addEventListener("storage", (event) => {
 });
 
 $("#profileButton").textContent = initials(user);
-if (!localStorage.getItem(roomKey()))
-  saveRoom({ items: defaultItems, activity: defaultActivity });
+if (!CartShareStorage.getRoom(roomCode)) {
+  saveRoom({
+    code: roomCode,
+    members: [user, "Maya", "Jordan", "Priya"],
+    items: defaultItems,
+    activity: defaultActivity,
+    createdAt: new Date().toISOString(),
+  });
+}
 render();

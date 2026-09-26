@@ -19,6 +19,7 @@ Then visit `http://localhost:5500`.
 - Filter the list by all items, your items, or picked-up items.
 - Persist each room in `localStorage`.
 - Sync room changes across browser tabs with the `storage` event.
+- Generate unique six-character room codes and validate existing rooms before joining.
 - Track a live activity feed and free-delivery progress toward $75.
 - Print a clean, audit-ready group receipt with print styles.
 
@@ -26,6 +27,7 @@ Then visit `http://localhost:5500`.
 
 ```text
 css/styles.css
+js/storage.js
 js/app.js
 assets/
 index.html
