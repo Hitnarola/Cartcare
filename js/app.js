@@ -1,4 +1,5 @@
 const USER_KEY = "cartshare-user";
+const ACTIVE_ROOM_KEY = "cartshare-active-room";
 const defaultItems = [
   {
     id: "1",
@@ -50,7 +51,7 @@ const defaultActivity = [
     initials: "PK",
   },
 ];
-let roomCode = "LOFT-42";
+let roomCode = localStorage.getItem(ACTIVE_ROOM_KEY) || "LOFT-42";
 let currentFilter = "all";
 let user = localStorage.getItem(USER_KEY) || "You";
 
@@ -223,6 +224,7 @@ $("#joinRoom").addEventListener("click", () => {
     render();
     return;
   }
+  localStorage.setItem(ACTIVE_ROOM_KEY, roomCode);
   render();
   showToast(`Joined room ${roomCode}`);
 });
@@ -237,6 +239,7 @@ $("#newRoom").addEventListener("click", () => {
     ],
   });
   roomCode = room.code;
+  localStorage.setItem(ACTIVE_ROOM_KEY, roomCode);
   currentFilter = "all";
   render();
   showToast(`New room ${roomCode} is ready`);
