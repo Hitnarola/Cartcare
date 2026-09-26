@@ -251,6 +251,10 @@ $("#copyRoom").addEventListener("click", async () => {
 $("#printReceipt").addEventListener("click", () => window.print());
 $("#resetRoom").addEventListener("click", () => {
   localStorage.removeItem(roomKey());
+  if (roomCode !== "LOFT-42") {
+    roomCode = "LOFT-42";
+    localStorage.setItem(ACTIVE_ROOM_KEY, roomCode);
+  }
   render();
   showToast("Demo room reset");
 });
@@ -271,9 +275,13 @@ window.addEventListener("storage", (event) => {
 });
 
 $("#profileButton").textContent = initials(user);
-if (!CartShareStorage.getRoom(roomCode)) {
+if (roomCode !== "LOFT-42" && !CartShareStorage.getRoom(roomCode)) {
+  roomCode = "LOFT-42";
+  localStorage.setItem(ACTIVE_ROOM_KEY, roomCode);
+}
+if (!CartShareStorage.getRoom("LOFT-42")) {
   saveRoom({
-    code: roomCode,
+    code: "LOFT-42",
     members: [user, "Maya", "Jordan", "Priya"],
     items: defaultItems,
     activity: defaultActivity,
