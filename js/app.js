@@ -1,5 +1,6 @@
 const USER_KEY = "cartshare-user";
 const ACTIVE_ROOM_KEY = "cartshare-active-room";
+const savedActiveRoom = localStorage.getItem(ACTIVE_ROOM_KEY);
 const defaultItems = [
   {
     id: "1",
@@ -51,7 +52,7 @@ const defaultActivity = [
     initials: "PK",
   },
 ];
-let roomCode = localStorage.getItem(ACTIVE_ROOM_KEY) || "LOFT-42";
+let roomCode = savedActiveRoom || "LOFT-42";
 let currentFilter = "all";
 let user = localStorage.getItem(USER_KEY) || "You";
 
@@ -275,11 +276,22 @@ window.addEventListener("storage", (event) => {
 });
 
 $("#profileButton").textContent = initials(user);
-if (roomCode !== "LOFT-42" && !CartShareStorage.getRoom(roomCode)) {
-  roomCode = "LOFT-42";
-  localStorage.setItem(ACTIVE_ROOM_KEY, roomCode);
+if (!CartShareStorage.getRoom(roomCode) && savedActiveRoom) {
+  saveRoom({
+    code: roomCode,
+    members: [user],
+    items: [],
+    activity: [
+      {
+        text: `<strong>${user}</strong> restored the room`,
+        time: "just now",
+        initials: initials(user),
+      },
+    ],
+    createdAt: new Date().toISOString(),
+  });
 }
-if (!CartShareStorage.getRoom("LOFT-42")) {
+if (!savedActiveRoom && !CartShareStorage.getRoom("LOFT-42")) {
   saveRoom({
     code: "LOFT-42",
     members: [user, "Maya", "Jordan", "Priya"],

@@ -44,6 +44,8 @@ const CartShareStorage = (() => {
     const room = getRoom(normalizedCode);
     if (!room) return null;
 
+    room.members = room.members || [];
+    room.activity = room.activity || [];
     if (!room.members.includes(userName)) {
       room.members.push(userName);
       room.activity.unshift({
